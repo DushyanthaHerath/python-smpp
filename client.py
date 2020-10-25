@@ -1,46 +1,52 @@
 import logging
+import time
 import sys
 
 import smpplib.gsm
 import smpplib.client
 import smpplib.consts
+import config
 
 # if you want to know what's happening
 logging.basicConfig(level='DEBUG')
 
-# Two parts, UCS2, SMS with UDH
-parts, encoding_flag, msg_type_flag = smpplib.gsm.make_parts(u'Sample Text\n'*10)
+client = smpplib.client.Client(config.host, config.port, allow_unknown_opt_params=True)
 
-client = smpplib.client.Client('172.17.0.0', 3700, allow_unknown_opt_params=True)
+
 
 # Print when obtain message_id
 client.set_message_sent_handler(
     lambda pdu: sys.stdout.write('sent {} {}\n'.format(pdu.sequence, pdu.message_id)))
-client.set_message_received_handler(
-    lambda pdu: sys.stdout.write('delivered {}\n'.format(pdu.receipted_message_id)))
+client.set_message_received_handler(lambda pdu: handle_receive_sms(pdu))
 
 client.connect()
-client.bind_transceiver(system_id='username', password='pw')
+client.bind_transceiver(system_id=config.system_id, password=config.password)
 
-for part in parts:
-    pdu = client.send_message(
+try:
+	listen(client)
+except:
+	time.sleep(600)
+	listen(client)
+	
+
+
+def handle_receive_sms(pdu):
+        logging.debug('Sample dict log: %s', pdu)
+        return 0 # cmd status for deliver_sm_resp
+        
+def send_message(part):
+	pdu = client.send_message(
         source_addr_ton=smpplib.consts.SMPP_TON_INTL,
-        #source_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
-        # Make sure it is a byte string, not unicode:
-        source_addr='3583',
-
+        source_addr=config.source_addr,
         dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
-        #dest_addr_npi=smpplib.consts.SMPP_NPI_ISDN,
-        # Make sure thease two params are byte strings, not unicode:
-        destination_addr='0782499869',
+        destination_addr=config.default_receiver,
         short_message=part,
-
         data_coding=encoding_flag,
         esm_class=msg_type_flag,
         registered_delivery=True,
-    )
-    print(pdu.sequence)
-
-    
-# Enters a loop, waiting for incoming PDUs
-client.listen()
+    	)
+    	print(pdu.sequence)
+    	
+def listen(client)
+	# Enters a loop, waiting for incoming PDUs
+	client.listen()	
