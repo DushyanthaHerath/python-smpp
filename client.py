@@ -45,7 +45,7 @@ def send_message(part):
         esm_class=msg_type_flag,
         registered_delivery=True,
     	)
-    	print(pdu.sequence)
+    print(pdu.sequence)
     	
 def listen(client)
 	# Enters a loop, waiting for incoming PDUs
