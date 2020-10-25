@@ -36,17 +36,16 @@ def handle_receive_sms(pdu):
         
 def send_message(part):
 	pdu = client.send_message(
-        source_addr_ton=smpplib.consts.SMPP_TON_INTL,
-        source_addr=config.source_addr,
-        dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
-        destination_addr=config.default_receiver,
-        short_message=part,
-        data_coding=encoding_flag,
-        esm_class=msg_type_flag,
-        registered_delivery=True,
+            source_addr_ton=smpplib.consts.SMPP_TON_INTL,
+            source_addr=config.source_addr,
+            dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
+            destination_addr=config.default_receiver,
+            short_message=part,
+            data_coding=encoding_flag,
+            esm_class=msg_type_flag,
+            registered_delivery=True,
     	)
     print(pdu.sequence)
     	
 def listen(client)
-	# Enters a loop, waiting for incoming PDUs
-	client.listen()	
+	client.listen()
