@@ -46,5 +46,5 @@ def send_message(part):
             registered_delivery=True,
     	)
     	
-def listen(client)
+def listen(client):
 	client.listen()
