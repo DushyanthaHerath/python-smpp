@@ -12,7 +12,24 @@ logging.basicConfig(level='DEBUG')
 
 client = smpplib.client.Client(config.host, config.port, allow_unknown_opt_params=True)
 
+def handle_receive_sms(pdu):
+    logging.debug('Sample dict log: %s', pdu)
+    return 0 # cmd status for deliver_sm_resp
 
+def send_message(part):
+    pdu = client.send_message(
+        source_addr_ton=smpplib.consts.SMPP_TON_INTL,
+        source_addr=config.source_addr,
+        dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
+        destination_addr=config.default_receiver,
+        short_message=part,
+        data_coding=encoding_flag,
+        esm_class=msg_type_flag,
+        registered_delivery=True,
+    )
+
+def listen(client):
+    client.listen()
 
 # Print when obtain message_id
 client.set_message_sent_handler(
@@ -27,24 +44,3 @@ try:
 except:
 	time.sleep(600)
 	listen(client)
-	
-
-
-def handle_receive_sms(pdu):
-        logging.debug('Sample dict log: %s', pdu)
-        return 0 # cmd status for deliver_sm_resp
-        
-def send_message(part):
-	pdu = client.send_message(
-            source_addr_ton=smpplib.consts.SMPP_TON_INTL,
-            source_addr=config.source_addr,
-            dest_addr_ton=smpplib.consts.SMPP_TON_INTL,
-            destination_addr=config.default_receiver,
-            short_message=part,
-            data_coding=encoding_flag,
-            esm_class=msg_type_flag,
-            registered_delivery=True,
-    	)
-    	
-def listen(client):
-	client.listen()
